@@ -78,7 +78,7 @@ const OtpVerification = () => {
 
   return (
     <AuthLayout>
-      <VStack className="max-w-[440px] w-full h-full p-4" space="4xl">
+      <VStack className="max-w-[440px] w-full h-full" space="4xl">
         <VStack className="items-center">
           <Logo width={150} height={150} />
           <Heading className="text-center" size="3xl">

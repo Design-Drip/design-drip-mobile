@@ -78,7 +78,7 @@ const LoginContent = () => {
   };
 
   return (
-    <VStack className="max-w-[440px] w-full h-full p-4" space="4xl">
+    <VStack className="max-w-[440px] w-full h-full" space="4xl">
       <VStack className="items-center">
         <Logo width={275} height={275} />
         <Heading size="2xl">Welcome to Design Drip</Heading>
