@@ -30,7 +30,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/images/shirt-placeholder.webp"]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
