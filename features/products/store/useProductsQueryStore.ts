@@ -46,9 +46,14 @@ interface ProductsQueryState {
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   resetFilters: () => void;
-  toggleCategory: (category: Omit<ProductCategory, "description">) => void;
+  toggleCategory: (
+    category:
+      | Omit<ProductCategory, "description">
+      | Omit<ProductCategory, "description">[],
+    replaceAll?: boolean
+  ) => void;
   toggleSize: (size: string) => void;
-  toggleColor: (color: string) => void;
+  toggleColor: (color: string | string[], replaceAll?: boolean) => void;
 }
 
 const persistConfig: PersistOptions<ProductsQueryState, ProductsQueryState> = {
@@ -91,8 +96,17 @@ export const useProductsQueryStore = create<ProductsQueryState>()(
 
         resetFilters: () => set({ ...initialState }),
 
-        toggleCategory: (category) =>
+        toggleCategory: (category, replaceAll = false) =>
           set((state) => {
+            // Handle array input (for replacing all categories)
+            if (Array.isArray(category)) {
+              return {
+                categories: replaceAll ? category : state.categories,
+                page: 1,
+              };
+            }
+
+            // Handle single category toggle
             const isInList = state.categories.some(
               (cat) => cat.id === category.id
             );
@@ -115,8 +129,17 @@ export const useProductsQueryStore = create<ProductsQueryState>()(
             };
           }),
 
-        toggleColor: (color) =>
+        toggleColor: (color, replaceAll = false) =>
           set((state) => {
+            // Handle array input (for replacing all colors)
+            if (Array.isArray(color)) {
+              return {
+                colors: replaceAll ? color : state.colors,
+                page: 1,
+              };
+            }
+
+            // Handle single color toggle
             const isInList = state.colors.includes(color);
             return {
               colors: isInList

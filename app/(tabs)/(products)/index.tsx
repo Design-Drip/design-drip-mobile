@@ -18,6 +18,7 @@ import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { Spinner } from "@/components/ui/spinner";
+import SearchInput from "@/components/SearchInput";
 
 export default function ProductsScreen() {
   // Get store actions and state
@@ -26,10 +27,12 @@ export default function ProductsScreen() {
     isSortOpen,
     page,
     sort,
+    search,
     setIsSortOpen,
     setIsFilterOpen,
     setPage,
     setSort,
+    setSearch,
   } = useProductsQueryStore();
 
   // Fetch products data
@@ -66,17 +69,28 @@ export default function ProductsScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="p-4 flex-row justify-between items-center">
-        <Text className="font-bold">{products?.totalItems || 0} Products</Text>
-        <Button
-          variant="outline"
-          size="sm"
-          onPress={() => setIsSortOpen(true)}
-          className="flex-row items-center"
-        >
-          <SlidersHorizontal size={16} className="mr-1" />
-          <ButtonText>Sort</ButtonText>
-        </Button>
+      <View className="p-4">
+        <SearchInput
+          placeholder="Search products..."
+          onSearchChange={setSearch}
+          defaultValue={search}
+          className="mb-3"
+          debounceTime={2000}
+        />
+        <View className="flex-row justify-between items-center">
+          <Text className="font-bold">
+            {products?.totalItems || 0} Products
+          </Text>
+          <Button
+            variant="outline"
+            size="sm"
+            onPress={() => setIsFilterOpen(true)}
+            className="flex-row items-center"
+          >
+            <SlidersHorizontal size={16} className="mr-1" />
+            <ButtonText>Filter</ButtonText>
+          </Button>
+        </View>
       </View>
 
       <Divider />
