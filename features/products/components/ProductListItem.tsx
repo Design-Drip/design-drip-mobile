@@ -25,24 +25,28 @@ export default function ProductListItem({ product }: ProductListItemProps) {
   return (
     <View className="flex-1">
       <Card className="p-5 rounded-lg flex-1">
-        <Image
-          source={
-            selectedColor?.image?.url
-              ? {
-                  uri: selectedColor.image.url,
-                }
-              : require("@/assets/images/shirt-placeholder.webp")
-          }
-          className="mb-6 h-[240px] w-full rounded-md"
-          alt={`${product.name} image`}
-          resizeMode="contain"
-        />
-        <Text className="text-base font-bold mb-2 text-typography-700">
-          {product.name}
-        </Text>
-        <Heading size="md" className="mb-4">
-          {formatPrice(product.base_price)}
-        </Heading>
+        <Link href={`/(products)/${product._id}`} asChild>
+          <Pressable className="w-full">
+            <Image
+              source={
+                selectedColor?.image?.url
+                  ? {
+                      uri: selectedColor.image.url,
+                    }
+                  : require("@/assets/images/shirt-placeholder.webp")
+              }
+              className="mb-6 h-[240px] w-full rounded-md"
+              alt={`${product.name} image`}
+              resizeMode="contain"
+            />
+            <Text className="text-base font-bold mb-2 text-typography-700">
+              {product.name}
+            </Text>
+            <Heading size="md" className="mb-4">
+              {formatPrice(product.base_price)}
+            </Heading>
+          </Pressable>
+        </Link>
 
         <ColorPanel
           colors={product.colors}
@@ -50,11 +54,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
           onSelectColor={setSelectedColor}
         />
 
-        <Link
-          className="justify-self-end"
-          href={`/(products)/${product._id}`}
-          asChild
-        >
+        <Link href={`/(products)/${product._id}`} asChild>
           <Pressable className="w-full">
             <Text className="text-primary-600 font-medium text-center">
               View Details
