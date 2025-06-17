@@ -1,10 +1,9 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import { ScrollView, useWindowDimensions } from "react-native";
+import { ScrollView, useWindowDimensions, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import RenderHtml from "react-native-render-html";
+import { useState } from "react";
 
-import { Card } from "@/components/ui/card";
-import { Image } from "@/components/ui/image";
 import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
@@ -15,10 +14,18 @@ import { Spinner } from "@/components/ui/spinner";
 import { Center } from "@/components/ui/center";
 import { getProductDetailQuery } from "@/features/products/queries";
 import { formatPrice } from "@/utils/price";
+import ImageCarousel, { ImageItem } from "@/components/ImageCarousel";
+import ColorPanel from "@/features/products/components/ColorPanel";
+import { ProductListItemColor } from "@/features/products/queries/types";
+import { ProductColor } from "@/features/products/types";
+import { Image } from "@/components/ui/image";
 
 export default function ProductDetailsScreen() {
   const { width } = useWindowDimensions();
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  const [selectedColor, setSelectedColor] = useState<ProductColor | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const {
     data: productData,
@@ -43,92 +50,142 @@ export default function ProductDetailsScreen() {
   }
 
   const { product, colors, sizes } = productData;
-  const uniqueSizes = Array.from(new Set(sizes.map((size) => size.size)));
 
-  // Find the main product image (front view)
-  const mainImage =
-    colors[0]?.images.find((img) => img.view_side === "front") ||
-    colors[0]?.images?.[0];
+  // Initialize selected color if not set
+  if (!selectedColor && colors.length > 0 && !selectedColor) {
+    setSelectedColor(colors[0]);
+  }
+
+  // Convert colors to format needed by ColorPanel
+  const colorOptions: ProductListItemColor[] = colors.map((color) => ({
+    id: color.id,
+    color: color.color,
+    color_value: color.color_value,
+    image: color.images.find((img) => img.view_side === "front") || null,
+  }));
+
+  // Get unique sizes
+  const uniqueSizes = Array.from(new Set(sizes.map((size) => size.size))).sort(
+    (a, b) => {
+      const sizeOrder = { S: 1, M: 2, L: 3, XL: 4, XXL: 5 };
+      return (
+        (sizeOrder[a as keyof typeof sizeOrder] || 99) -
+        (sizeOrder[b as keyof typeof sizeOrder] || 99)
+      );
+    }
+  );
+
+  // Get current color images
+  const currentImages = selectedColor?.images || [];
+
+  const handleColorSelect = (color: ProductListItemColor) => {
+    const fullColor = colors.find((c) => c.id === color.id);
+    if (fullColor) {
+      setSelectedColor(fullColor);
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-background">
       <Stack.Screen options={{ title: product.name }} />
 
-      <Box className="p-4">
-        <Image
-          source={
-            mainImage
-              ? { uri: mainImage.url }
-              : require("@/assets/images/shirt-placeholder.webp")
-          }
-          className="h-[300px] w-full rounded-lg mb-4"
-          alt={`${product.name} image`}
-          resizeMode="cover"
-        />
+      <Box className="mb-4">
+        {currentImages.length === 0 ? (
+          <Image
+            source={require("@/assets/images/shirt-placeholder.webp")}
+            resizeMode="cover"
+            className="h-[300px] w-full rounded-lg"
+            alt="Product image placeholder"
+          />
+        ) : (
+          <ImageCarousel
+            images={currentImages as ImageItem[]}
+            height={350}
+            width={width}
+            autoPlay={false}
+          />
+        )}
+      </Box>
 
-        <Card className="p-5 rounded-lg w-full">
-          <VStack space="md">
-            <Heading size="lg">{product.name}</Heading>
+      <Box className="px-4 pb-6">
+        <VStack space="md">
+          <Heading size="lg">{product.name}</Heading>
 
-            <Heading size="md" className="text-primary-600">
-              {formatPrice(product.base_price)}
-            </Heading>
+          <Heading size="md" className="text-primary-600">
+            {formatPrice(product.base_price)}
+          </Heading>
 
+          {colors.length > 0 && (
+            <View>
+              <Text className="font-bold mb-2">Colors</Text>
+              <ColorPanel
+                colors={colorOptions}
+                selectedColor={
+                  colorOptions.find((c) => c.id === selectedColor?.id) || null
+                }
+                onSelectColor={handleColorSelect}
+              />
+            </View>
+          )}
+
+          {uniqueSizes.length > 0 && (
+            <Box>
+              <Text className="font-bold mb-2">Sizes</Text>
+              <HStack space="sm" className="flex-wrap">
+                {uniqueSizes.map((size) => (
+                  <Button
+                    key={size}
+                    variant={selectedSize === size ? "solid" : "outline"}
+                    className={`mb-2 min-w-[60px] ${
+                      selectedSize === size
+                        ? "bg-primary-600"
+                        : "border-outline-300"
+                    }`}
+                    onPress={() => setSelectedSize(size)}
+                  >
+                    <ButtonText
+                      className={
+                        selectedSize === size
+                          ? "text-white"
+                          : "text-typography-600"
+                      }
+                    >
+                      {size}
+                    </ButtonText>
+                  </Button>
+                ))}
+              </HStack>
+            </Box>
+          )}
+
+          <Box className="mt-2">
+            <Text className="font-bold mb-2">Description</Text>
             <RenderHtml
-              contentWidth={width}
+              contentWidth={width - 32} // Account for padding
               source={{
                 html: product.description,
               }}
               enableExperimentalGhostLinesPrevention
             />
+          </Box>
 
-            {uniqueSizes.length > 0 && (
-              <Box>
-                <Text className="font-bold mb-2">Available Sizes</Text>
-                <HStack space="sm" className="flex-wrap">
-                  {uniqueSizes.map((size) => (
-                    <Box
-                      key={size}
-                      className="border border-outline-300 rounded-md px-3 py-1 mb-2"
-                    >
-                      <Text className="text-sm">{size}</Text>
-                    </Box>
-                  ))}
-                </HStack>
-              </Box>
-            )}
-
-            {colors.length > 0 && (
-              <Box>
-                <Text className="font-bold mb-2">Available Colors</Text>
-                <HStack space="sm" className="flex-wrap">
-                  {colors.map((colorObj) => (
-                    <Box
-                      key={colorObj.id}
-                      style={{ backgroundColor: colorObj.color_value }}
-                      className="w-8 h-8 rounded-full border border-outline-300 mb-2"
-                    />
-                  ))}
-                </HStack>
-              </Box>
-            )}
-
-            <HStack space="md" className="mt-4">
-              <Button className="flex-1" size="lg">
-                <ButtonText>Add to Cart</ButtonText>
-              </Button>
-              <Button
-                variant="outline"
-                className="px-4 border-outline-300"
-                size="lg"
-              >
-                <ButtonText className="text-typography-600">
-                  Wishlist
-                </ButtonText>
-              </Button>
-            </HStack>
-          </VStack>
-        </Card>
+          <HStack space="md" className="mt-4">
+            <Button
+              className="flex-1"
+              size="lg"
+              isDisabled={!selectedSize || !selectedColor}
+            >
+              <ButtonText>Add to Cart</ButtonText>
+            </Button>
+            <Button
+              variant="outline"
+              className="px-4 border-outline-300"
+              size="lg"
+            >
+              <ButtonText className="text-typography-600">Wishlist</ButtonText>
+            </Button>
+          </HStack>
+        </VStack>
       </Box>
     </ScrollView>
   );
