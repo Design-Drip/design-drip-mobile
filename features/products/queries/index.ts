@@ -12,7 +12,7 @@ import {
 } from "./types";
 
 // Get products based on filters and sort options
-export const getProductsQuery = () => {
+export const getProductsQuery = (productIds?: string[]) => {
   const {
     search,
     categories,
@@ -38,6 +38,7 @@ export const getProductsQuery = () => {
         sort,
         page,
         limit,
+        productIds,
       },
     ],
     queryFn: async ({ signal }) => {
@@ -53,6 +54,7 @@ export const getProductsQuery = () => {
           sort,
           page: page.toString(),
           limit: limit.toString(),
+          productIds,
         },
         paramsSerializer: (params) => {
           return qs.stringify(params, {
