@@ -63,6 +63,7 @@ const LoginContent = () => {
         throw new Error("Login failed!");
       }
     } catch (error) {
+      console.error("Login attempt failed:", error);
       toastError("Login failed!");
     }
   };
