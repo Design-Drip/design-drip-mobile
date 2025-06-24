@@ -11,6 +11,7 @@ import {
 } from "../queries/types";
 import { formatPrice } from "@/utils/price";
 import ColorPanel from "./ColorPanel";
+import ProductWishlistButton from "./ProductWishlistButton";
 
 export interface ProductListItemProps {
   product: ProductListItemResponse;
@@ -25,6 +26,11 @@ export default function ProductListItem({ product }: ProductListItemProps) {
   return (
     <View className="flex-1">
       <Card className="p-5 rounded-lg flex-1">
+        {/* Wishlist Button - Absolutely positioned */}
+        <View className="absolute top-2 right-2 z-10">
+          <ProductWishlistButton id={product._id} />
+        </View>
+
         <Link href={`/(products)/${product._id}`} asChild>
           <Pressable className="w-full">
             <Image
@@ -54,7 +60,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
           onSelectColor={setSelectedColor}
         />
 
-        <Link href={`/(products)/${product._id}`} asChild>
+        <Link href={`/${product._id}`} asChild>
           <Pressable className="w-full">
             <Text className="text-primary-600 font-medium text-center">
               View Details

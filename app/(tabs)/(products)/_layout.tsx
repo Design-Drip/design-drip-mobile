@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useProductsQueryStore } from "@/features/products/store/useProductsQueryStore";
 import { Icon } from "@/components/ui/icon";
 import { Filter } from "lucide-react-native";
+import ProductWishlistButton from "@/features/products/components/ProductWishlistButton";
 
 export default function ProductsLayout() {
   const { setIsFilterOpen } = useProductsQueryStore();
@@ -24,7 +25,13 @@ export default function ProductsLayout() {
           ),
         }}
       />
-      <Stack.Screen name="[id]" options={{ title: "Product Details" }} />
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: "Product Details",
+          headerRight: () => <ProductWishlistButton />,
+        }}
+      />
     </Stack>
   );
 }

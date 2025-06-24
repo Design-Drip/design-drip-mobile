@@ -19,6 +19,7 @@ import ColorPanel from "@/features/products/components/ColorPanel";
 import { ProductListItemColor } from "@/features/products/queries/types";
 import { ProductColor } from "@/features/products/types";
 import { Image } from "@/components/ui/image";
+import ProductWishlistButton from "@/features/products/components/ProductWishlistButton";
 
 export default function ProductDetailsScreen() {
   const { width } = useWindowDimensions();
@@ -87,7 +88,12 @@ export default function ProductDetailsScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background">
-      <Stack.Screen options={{ title: product.name }} />
+      <Stack.Screen
+        options={{
+          title: product.name,
+          headerRight: () => <ProductWishlistButton id={product.id} />,
+        }}
+      />
 
       <Box className="mb-4">
         {currentImages.length === 0 ? (
@@ -169,22 +175,13 @@ export default function ProductDetailsScreen() {
             />
           </Box>
 
-          <HStack space="md" className="mt-4">
-            <Button
-              className="flex-1"
-              size="lg"
-              isDisabled={!selectedSize || !selectedColor}
-            >
-              <ButtonText>Add to Cart</ButtonText>
-            </Button>
-            <Button
-              variant="outline"
-              className="px-4 border-outline-300"
-              size="lg"
-            >
-              <ButtonText className="text-typography-600">Wishlist</ButtonText>
-            </Button>
-          </HStack>
+          <Button
+            className="flex-1 mt-4"
+            size="lg"
+            isDisabled={!selectedSize || !selectedColor}
+          >
+            <ButtonText>Add to Cart</ButtonText>
+          </Button>
         </VStack>
       </Box>
     </ScrollView>
