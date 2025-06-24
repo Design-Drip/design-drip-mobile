@@ -4,10 +4,8 @@ import {
   useAddToWishlistMutation,
   useRemoveFromWishlistMutation,
 } from "../mutations";
-import useCustomToast from "@/hooks/useCustomToast";
 
 const useWishlist = () => {
-  const { toastSuccess } = useCustomToast();
   const addToWishlist = useAddToWishlistMutation();
   const removeFromWishlist = useRemoveFromWishlistMutation();
 
@@ -16,19 +14,11 @@ const useWishlist = () => {
   });
 
   const addItem = (productId: string) => {
-    return addToWishlist.mutate(productId, {
-      onSuccess: () => {
-        toastSuccess("Product added to wishlist!");
-      },
-    });
+    return addToWishlist.mutate(productId);
   };
 
   const removeItem = (productId: string) => {
-    return removeFromWishlist.mutate(productId, {
-      onSuccess: () => {
-        toastSuccess("Product removed from wishlist!");
-      },
-    });
+    return removeFromWishlist.mutate(productId);
   };
 
   const isInWishlist = (productId: string) => {

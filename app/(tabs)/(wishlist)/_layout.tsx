@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import ProductWishlistButton from "@/features/products/components/ProductWishlistButton";
 
 export default function WishlistLayout() {
   return (
@@ -9,7 +10,13 @@ export default function WishlistLayout() {
           title: "Wish List",
         }}
       />
-      <Stack.Screen name="[id]" options={{ title: "Product Details" }} />
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: "Product Details",
+          headerRight: () => <ProductWishlistButton />,
+        }}
+      />
     </Stack>
   );
 }
