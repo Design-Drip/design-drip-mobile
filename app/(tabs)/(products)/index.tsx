@@ -1,7 +1,6 @@
 import React from "react";
 import { FlatList, RefreshControl, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { SlidersHorizontal } from "lucide-react-native";
 
 import {

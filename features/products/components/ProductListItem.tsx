@@ -54,7 +54,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
           onSelectColor={setSelectedColor}
         />
 
-        <Link href={`/(products)/${product._id}`} asChild>
+        <Link href={`/${product._id}`} asChild>
           <Pressable className="w-full">
             <Text className="text-primary-600 font-medium text-center">
               View Details
