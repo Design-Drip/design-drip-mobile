@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import useWishlist from "@/features/wishlist/hooks/useWishlist";
 import { Heart } from "lucide-react-native";
-import { Product } from "../types";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,12 +11,12 @@ import Animated, {
 import { useEffect } from "react";
 
 type ProductWishlistButtonProps = {
-  product?: Product;
+  id?: string;
 };
 
-const ProductWishlistButton = ({ product }: ProductWishlistButtonProps) => {
+const ProductWishlistButton = ({ id }: ProductWishlistButtonProps) => {
   const { isInWishlist, addItem, removeItem } = useWishlist();
-  const isFavorite = product ? isInWishlist(product.id) : false;
+  const isFavorite = id ? isInWishlist(id) : false;
 
   const scale = useSharedValue(1);
 
@@ -41,13 +40,13 @@ const ProductWishlistButton = ({ product }: ProductWishlistButtonProps) => {
   }, []);
 
   const handleWishlistToggle = () => {
-    if (!product) return;
+    if (!id) return;
 
     if (isFavorite) {
-      removeItem(product.id);
+      removeItem(id);
       scale.value = withSpring(1);
     } else {
-      addItem(product.id);
+      addItem(id);
       // Add extra bounce animation on add
       scale.value = withSequence(
         withSpring(1.3, { damping: 2 }),

@@ -91,7 +91,7 @@ export default function ProductDetailsScreen() {
       <Stack.Screen
         options={{
           title: product.name,
-          headerRight: () => <ProductWishlistButton product={product} />,
+          headerRight: () => <ProductWishlistButton id={product.id} />,
         }}
       />
 
