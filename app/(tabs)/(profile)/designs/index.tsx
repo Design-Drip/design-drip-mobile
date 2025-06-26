@@ -18,7 +18,7 @@ import { useGetDesign } from "@/features/designs/queries/use-get-design";
 import { useDeleteDesign } from "@/features/designs/mutations/use-delete-design";
 import { useQueryClient } from "@tanstack/react-query";
 import useCustomToast from "@/hooks/useCustomToast";
-import { Trash2, Edit, Eye, MoreHorizontal, Plus } from "lucide-react-native";
+import { Trash2, ShoppingCart, Eye, MoreHorizontal } from "lucide-react-native";
 
 interface FormattedDesign {
   id: string;
@@ -107,7 +107,7 @@ const DesignItem = ({
                 onPress={() => onOrder(id)}
                 className="flex-row items-center"
               >
-                <Icon as={Edit} size="xs" className="mr-1" />
+                <Icon as={ShoppingCart} size="xs" className="mr-1" />
                 <ButtonText>Order</ButtonText>
               </Button>
 
@@ -203,11 +203,6 @@ export default function DesignsScreen() {
     }
   };
 
-  const handleCreateNew = () => {
-    // Navigate to design creation
-    toast.toastSuccess("Create new design functionality to be implemented");
-  };
-
   if (isLoading) {
     return (
       <Box className="flex-1 bg-background-0">
@@ -241,13 +236,6 @@ export default function DesignsScreen() {
                 Manage your custom shirt designs
               </Text>
             </VStack>
-
-            <Button
-              onPress={handleCreateNew}
-              className="bg-primary-500 rounded-full p-3"
-            >
-              <Icon as={Plus} size="sm" className="text-white" />
-            </Button>
           </HStack>
 
           {/* Stats */}
@@ -270,18 +258,14 @@ export default function DesignsScreen() {
         {formatData.length === 0 ? (
           <Center className="py-12">
             <VStack space="md" className="items-center max-w-sm">
-              <Icon as={Plus} size="xl" className="text-typography-400" />
               <VStack space="xs" className="items-center">
                 <Text size="lg" className="text-typography-600 font-medium">
                   No designs yet
                 </Text>
                 <Text className="text-typography-500 text-center">
-                  Create your first custom shirt design to get started
+                  Create your custom shirt design in website to get started
                 </Text>
               </VStack>
-              <Button onPress={handleCreateNew} className="mt-4">
-                <ButtonText>Create Your First Design</ButtonText>
-              </Button>
             </VStack>
           </Center>
         ) : (
