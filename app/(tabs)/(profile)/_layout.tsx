@@ -40,6 +40,16 @@ export default function ProfileLayout() {
           },
         }}
       />
+      <Stack.Screen
+        name="designs/index"
+        options={{
+          title: "Saved Designs",
+          headerTitle: "Saved Designs",
+          headerTitleStyle: {
+            fontWeight: "600",
+          },
+        }}
+      />
     </Stack>
   );
 }
