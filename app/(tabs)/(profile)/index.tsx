@@ -7,7 +7,12 @@ import { ScrollView, Image, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 import { Icon } from "@/components/ui/icon";
-import { ArrowRightIcon, CreditCardIcon, UserIcon } from "lucide-react-native";
+import {
+  ArrowRightIcon,
+  CreditCardIcon,
+  UserIcon,
+  Shirt,
+} from "lucide-react-native";
 import { PROFILE_ROUTES } from "@/constants/routes";
 
 export default function ProfileScreen() {
@@ -23,6 +28,11 @@ export default function ProfileScreen() {
       title: "Update Profile",
       icon: UserIcon,
       route: PROFILE_ROUTES.ACCOUNT,
+    },
+    {
+      title: "Saved Design",
+      icon: Shirt,
+      route: PROFILE_ROUTES.DESIGNS,
     },
   ];
 
