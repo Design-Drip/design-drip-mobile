@@ -15,7 +15,7 @@ export const useAddToCartMutation = () => {
   return useMutation({
     mutationFn: async (payload: AddToCartPayload) => {
       const response = await axiosPrivate.post("/cart", payload);
-      if (response.status !== 200) {
+      if (response.status !== 201) {
         throw new Error("Failed to add item to cart");
       }
 
