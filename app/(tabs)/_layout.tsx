@@ -56,6 +56,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="(cart)"
+        options={{
+          title: " Cart",
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="shopping-cart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="(profile)"
         options={{
           title: "Profile",

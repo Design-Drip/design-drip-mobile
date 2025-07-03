@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { CartKeys } from "./keys";
 import usePrivateAxios from "@/hooks/usePrivateAxios";
+import { CartResponse } from "./types";
 
 export const getCartQuery = () => {
   const axiosPrivate = usePrivateAxios();
@@ -13,7 +14,7 @@ export const getCartQuery = () => {
         throw new Error("Failed to fetch cart");
       }
 
-      return response.data;
+      return response.data as CartResponse;
     },
   });
 };
