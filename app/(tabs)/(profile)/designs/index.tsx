@@ -19,6 +19,7 @@ import { useDeleteDesign } from "@/features/designs/mutations/use-delete-design"
 import { useQueryClient } from "@tanstack/react-query";
 import useCustomToast from "@/hooks/useCustomToast";
 import { Trash2, ShoppingCart, Eye, MoreHorizontal } from "lucide-react-native";
+import { OrderModal } from "@/features/orders/components/OrderModal";
 
 interface FormattedDesign {
   id: string;
@@ -36,7 +37,7 @@ interface DesignItemProps {
   previewImages: any[];
   colorId: string;
   productId: string;
-  onOrder: (id: string) => void;
+  onOrder: (id: string, designName: string) => void;
   onDelete: (id: string) => void;
   isDeleting?: boolean;
 }
@@ -104,7 +105,7 @@ const DesignItem = ({
               <Button
                 size="sm"
                 variant="outline"
-                onPress={() => onOrder(id)}
+                onPress={() => onOrder(id, designName)}
                 className="flex-row items-center"
               >
                 <Icon as={ShoppingCart} size="xs" className="mr-1" />
@@ -136,6 +137,11 @@ const DesignItem = ({
 
 export default function DesignsScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [orderModalVisible, setOrderModalVisible] = useState(false);
+  const [selectedDesign, setSelectedDesign] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const { data, isLoading, refetch } = useGetDesign();
   const deleteDesignMutation = useDeleteDesign();
   const queryClient = useQueryClient();
@@ -168,9 +174,9 @@ export default function DesignsScreen() {
     setRefreshing(false);
   };
 
-  const handleOrder = (designId: string) => {
-    // Navigate to design editor
-    toast.toastSuccess("Order functionality to be implemented");
+  const handleOrder = (designId: string, designName: string) => {
+    setSelectedDesign({ id: designId, name: designName });
+    setOrderModalVisible(true);
   };
 
   const handleDelete = (designId: string) => {
@@ -282,6 +288,17 @@ export default function DesignsScreen() {
           </VStack>
         )}
       </ScrollView>
+
+      {/* Order Modal */}
+      {selectedDesign && (
+        <OrderModal
+          visible={orderModalVisible}
+          onClose={() => setOrderModalVisible(false)}
+          designId={selectedDesign.id}
+          designName={selectedDesign.name}
+          mode="add"
+        />
+      )}
     </Box>
   );
 }
