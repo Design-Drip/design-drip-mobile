@@ -50,6 +50,16 @@ export default function ProfileLayout() {
           },
         }}
       />
+      <Stack.Screen
+        name="orders"
+        options={{
+          title: "My Orders",
+          headerTitle: "My Orders",
+          headerTitleStyle: {
+            fontWeight: "600",
+          },
+        }}
+      />
     </Stack>
   );
 }

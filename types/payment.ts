@@ -20,19 +20,3 @@ export interface PaymentMethod {
   isDefault: boolean;
 }
 
-export interface PaymentMethodsResponse {
-  paymentMethods: PaymentMethod[];
-}
-
-export interface AddPaymentMethodRequest {
-  paymentMethodId: string;
-  setAsDefault?: boolean; // Đổi từ isDefault sang setAsDefault
-}
-
-export interface DeletePaymentMethodRequest {
-  paymentMethodId: string;
-}
-
-export interface SetDefaultPaymentMethodRequest {
-  paymentMethodId: string;
-}
