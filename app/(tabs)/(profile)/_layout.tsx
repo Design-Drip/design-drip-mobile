@@ -5,7 +5,6 @@ export default function ProfileLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
-        // Đảm bảo style nhất quán cho tất cả các màn hình
         headerStyle: {
           backgroundColor: "#fff",
         },
@@ -17,6 +16,7 @@ export default function ProfileLayout() {
         name="index"
         options={{
           title: "My Profile",
+          headerTitle: "Profile",
           headerShown: false,
         }}
       />
@@ -51,10 +51,18 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
-        name="orders"
+        name="orders/index"
         options={{
-          title: "My Orders",
-          headerTitle: "My Orders",
+          headerTitle: "Orders",
+          headerTitleStyle: {
+            fontWeight: "600",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="orders/[id]"
+        options={{
+          title: "Order Details",
           headerTitleStyle: {
             fontWeight: "600",
           },

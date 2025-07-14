@@ -1,4 +1,4 @@
-import { PaymentIntent } from "@stripe/stripe-react-native";
+import { OrderStatus } from "@/constants/orders";
 
 export interface OrderItemSize {
   size: string;
@@ -20,7 +20,7 @@ export interface Order {
   userId: string;
   items: OrderItem[];
   totalAmount: number;
-  status: PaymentIntent.Status;
+  status: OrderStatus;
   createdAt: Date;
   updatedAt: Date;
   paymentMethod: string;
