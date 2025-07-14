@@ -14,8 +14,11 @@ interface PaymentMethodsListProps {
   paymentMethods: PaymentMethod[];
   isLoading: boolean;
   onAddPaymentMethod: () => void;
-  onDeletePaymentMethod: (id: string) => void;
-  onSetDefaultPaymentMethod: (id: string) => void;
+  onDeletePaymentMethod?: (id: string) => void;
+  onSetDefaultPaymentMethod?: (id: string) => void;
+  selectMode?: boolean;
+  selectedPaymentMethod?: string;
+  onSelectPaymentMethod?: (id: string) => void;
 }
 
 export const PaymentMethodsList = ({
@@ -24,6 +27,9 @@ export const PaymentMethodsList = ({
   onAddPaymentMethod,
   onDeletePaymentMethod,
   onSetDefaultPaymentMethod,
+  selectMode = false,
+  selectedPaymentMethod,
+  onSelectPaymentMethod,
 }: PaymentMethodsListProps) => {
   if (isLoading) {
     return (
@@ -54,6 +60,13 @@ export const PaymentMethodsList = ({
               paymentMethod={method}
               onDelete={onDeletePaymentMethod}
               onSetDefault={onSetDefaultPaymentMethod}
+              selectMode={selectMode}
+              isSelected={selectMode && selectedPaymentMethod === method.id}
+              onSelect={
+                selectMode && onSelectPaymentMethod
+                  ? () => onSelectPaymentMethod(method.id)
+                  : undefined
+              }
             />
           ))}
 

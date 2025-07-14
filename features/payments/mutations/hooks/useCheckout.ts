@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePaymentMutations } from "..";
 import { PaymentsKeys } from "../../queries/keys";
 import { ProcessCheckoutRequest } from "../../types";
+import { OrdersKeys } from "@/features/orders/queries/keys";
 
 export const useProcessCheckoutMutation = () => {
   const queryClient = useQueryClient();
@@ -18,6 +19,9 @@ export const useProcessCheckoutMutation = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [PaymentsKeys.GetCheckoutInfoQuery],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [OrdersKeys.GetOrdersQuery],
       });
       toast.toastSuccess("Checkout successfully!");
     },

@@ -1,4 +1,4 @@
-import { PaymentMethod, StripePaymentMethod } from "@/types/payment";
+import { PaymentMethod } from "@/types/payment";
 import { PaymentIntent } from "@stripe/stripe-react-native";
 
 export interface PaymentMethodsResponse {
@@ -29,7 +29,7 @@ export interface CheckoutInfoResponse {
   }[];
   totalAmount: number;
   hasPaymentMethods: boolean;
-  defaultPaymentMethod: StripePaymentMethod | null;
+  defaultPaymentMethod: PaymentMethod | null;
 }
 
 export interface ProcessCheckoutRequest {
