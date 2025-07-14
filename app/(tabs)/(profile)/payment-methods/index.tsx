@@ -1,15 +1,8 @@
 import React, { useState } from "react";
 import { ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import { PROFILE_ROUTES } from "@/constants/routes";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
-import { ButtonText } from "@/components/ui/button-text";
 import { VStack } from "@/components/ui/vstack";
-import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
-import { ArrowLeftIcon } from "lucide-react-native";
 import { PaymentMethodsList } from "@/features/payments/components/PaymentMethodsList";
 import { AddPaymentMethodForm } from "@/features/payments/components/AddPaymentMethodForm";
 import useGetPaymentMethods from "@/features/payments/queries/hooks/useGetPaymentMethods";
@@ -18,12 +11,9 @@ import {
   useDeletePaymentMethod,
   useSetDefaultPaymentMethod,
 } from "@/features/payments/mutations/hooks/usePaymentMethods";
-import { AddPaymentMethodRequest } from "@/types/payment";
-import { PAYMENT_CONFIG } from "@/constants/config";
-import { A } from "@expo/html-elements";
+import { AddPaymentMethodRequest } from "@/features/payments/types";
 
 export default function PaymentMethodsScreen() {
-  const router = useRouter();
   const [showAddForm, setShowAddForm] = useState(false);
   // Queries
   const { paymentMethods, isLoading } = useGetPaymentMethods();

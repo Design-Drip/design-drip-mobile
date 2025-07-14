@@ -5,7 +5,7 @@ import {
   AddPaymentMethodRequest,
   DeletePaymentMethodRequest,
   SetDefaultPaymentMethodRequest,
-} from "@/types/payment";
+} from "../../types";
 import useCustomToast from "@/hooks/useCustomToast";
 
 export const useAddPaymentMethod = () => {
@@ -16,7 +16,7 @@ export const useAddPaymentMethod = () => {
   return useMutation({
     mutationKey: [PaymentsKeys.AddPaymentMethod],
     mutationFn: (data: AddPaymentMethodRequest) => {
-      console.log('Adding payment method with data:', data); // Log the data we're sending
+      console.log("Adding payment method with data:", data); // Log the data we're sending
       return addPaymentMethod(data);
     },
     onSuccess: () => {
@@ -24,10 +24,14 @@ export const useAddPaymentMethod = () => {
         queryKey: [PaymentsKeys.GetPaymentMethodsQuery],
       });
       toast.toastSuccess("Payment method added successfully");
-    },    onError: (error: Error | any) => {
+    },
+    onError: (error: Error | any) => {
       // Check for various error responses from API
-      const errorMessage = error?.response?.data?.error || error?.message || "Something went wrong";
-      console.error('Payment method addition error:', error); // Log the full error
+      const errorMessage =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Something went wrong";
+      console.error("Payment method addition error:", error); // Log the full error
       toast.toastError(`Failed to add payment method: ${errorMessage}`);
     },
   });
@@ -46,8 +50,12 @@ export const useDeletePaymentMethod = () => {
         queryKey: [PaymentsKeys.GetPaymentMethodsQuery],
       });
       toast.toastSuccess("Payment method deleted successfully");
-    },    onError: (error: Error | any) => {
-      const errorMessage = error?.response?.data?.error || error?.message || "Something went wrong";
+    },
+    onError: (error: Error | any) => {
+      const errorMessage =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Something went wrong";
       toast.toastError(`Failed to delete payment method: ${errorMessage}`);
     },
   });
@@ -60,15 +68,22 @@ export const useSetDefaultPaymentMethod = () => {
 
   return useMutation({
     mutationKey: [PaymentsKeys.SetDefaultPaymentMethod],
-    mutationFn: (data: SetDefaultPaymentMethodRequest) => setDefaultPaymentMethod(data),
+    mutationFn: (data: SetDefaultPaymentMethodRequest) =>
+      setDefaultPaymentMethod(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [PaymentsKeys.GetPaymentMethodsQuery],
       });
       toast.toastSuccess("Default payment method updated successfully");
-    },    onError: (error: Error | any) => {
-      const errorMessage = error?.response?.data?.error || error?.message || "Something went wrong";
-      toast.toastError(`Failed to update default payment method: ${errorMessage}`);
+    },
+    onError: (error: Error | any) => {
+      const errorMessage =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Something went wrong";
+      toast.toastError(
+        `Failed to update default payment method: ${errorMessage}`
+      );
     },
   });
 };

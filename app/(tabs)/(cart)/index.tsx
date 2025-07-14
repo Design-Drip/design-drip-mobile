@@ -164,8 +164,11 @@ const CartScreen = () => {
       return;
     }
 
-    // Store selected item IDs to use them in checkout
-    router.push("/checkout");
+    // Pass selected item IDs to checkout screen
+    router.push({
+      pathname: "/(tabs)/(cart)/checkout",
+      params: { itemIds: selectedItems.join(",") },
+    });
   };
 
   const handleEditItem = (item: CartItemType) => {

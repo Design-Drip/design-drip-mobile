@@ -11,22 +11,24 @@ import { ButtonText } from "@/components/ui/button-text";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { AddPaymentMethodRequest } from "@/types/payment";
 import { Spinner } from "@/components/ui/spinner";
+import { AddPaymentMethodRequest } from "../types";
 import { PAYMENT_CONFIG } from "@/constants/config";
 import { ArrowLeftIcon, Icon } from "@/components/ui/icon";
 import { Check } from "lucide-react-native";
 
 interface AddPaymentMethodFormProps {
   onSubmit: (data: AddPaymentMethodRequest) => void;
-  onCancel: () => void; // Add onCancel prop for back button
+  onCancel: () => void;
   isLoading: boolean;
+  onSuccess?: () => void;
 }
 
 export const AddPaymentMethodForm = ({
   onSubmit,
-  onCancel, // Destructure onCancel prop
+  onCancel,
   isLoading,
+  onSuccess,
 }: AddPaymentMethodFormProps) => {
   const { createPaymentMethod } = useStripe();
   const [makeDefault, setMakeDefault] = useState(false);
@@ -69,33 +71,28 @@ export const AddPaymentMethodForm = ({
       }
 
       if (!paymentMethod) {
-        Alert.alert(
-          "Error",
-          "Failed to create payment method. Please try again."
-        );
+        Alert.alert("Error", "Failed to create payment method");
         setProcessing(false);
         return;
       }
 
-      // Log to confirm checkbox state
-      console.log("Adding payment method with setAsDefault:", makeDefault);
-
-      // Submit the payment method ID to your mutation
-      // This will call the web app's endpoint
+      // Submit the payment method to the backend
       onSubmit({
         paymentMethodId: paymentMethod.id,
-        setAsDefault: makeDefault, // Using setAsDefault as expected by the backend
+        setAsDefault: makeDefault,
       });
 
-      // We won't show the alert here as the mutation will handle success messages
+      // Call the success callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
+
       setProcessing(false);
-    } catch (error) {
-      console.error("Error in payment method flow:", error);
+    } catch (err: any) {
+      console.error("Add payment method error:", err);
       Alert.alert(
         "Error",
-        `Failed to process payment: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
+        `An error occurred: ${err.message || "Unknown error"}`
       );
       setProcessing(false);
     }
@@ -160,7 +157,7 @@ export const AddPaymentMethodForm = ({
           )}
         </Button>
         <Button
-          onPress={onCancel} /* Call onCancel when back button is pressed */
+          onPress={onCancel}
           className="mt-4 flex-row items-center space-x-2"
           variant="outline"
         >
