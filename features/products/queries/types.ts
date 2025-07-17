@@ -27,3 +27,8 @@ export interface ProductListItemResponse {
   base_price: number;
   colors: ProductListItemColor[];
 }
+
+export interface ProductSizesByColorResponse {
+  color: ProductColor;
+  sizes: ProductSize[];
+}
