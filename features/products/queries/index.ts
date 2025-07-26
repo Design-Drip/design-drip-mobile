@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions, skipToken } from "@tanstack/react-query";
 import qs from "qs";
 import { ProductsKeys } from "./keys";
 import { useProductsQueryStore } from "../store/useProductsQueryStore";
@@ -9,6 +9,7 @@ import {
   ProductDetailResponse,
   ProductListColorsResponse,
   ProductListItemResponse,
+  ProductSizesByColorResponse,
 } from "./types";
 
 // Get products based on filters and sort options
@@ -105,17 +106,39 @@ export const getColorsQuery = () =>
     },
   });
 
+// Get product sizes by color
+export const getProductSizesByColorQuery = (colorId?: string) => {
+  return queryOptions({
+    queryKey: [ProductsKeys.GetProductSizesByColorQuery, colorId],
+    queryFn: colorId
+      ? async () => {
+          const response = await customAxios.get(
+            `/products/colors/${colorId}/sizes`
+          );
+
+          if (response.status !== 200) {
+            throw new Error("Failed to fetch product sizes by color");
+          }
+
+          return response.data as ProductSizesByColorResponse;
+        }
+      : skipToken,
+  });
+};
+
 // Get product details by ID
-export const getProductDetailQuery = (productId: string) =>
+export const getProductDetailQuery = (productId?: string) =>
   queryOptions({
     queryKey: [ProductsKeys.GetProductDetailsQuery, productId],
-    queryFn: async () => {
-      const response = await customAxios.get(`/products/${productId}`);
+    queryFn: productId
+      ? async () => {
+          const response = await customAxios.get(`/products/${productId}`);
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch product details");
-      }
+          if (response.status !== 200) {
+            throw new Error("Failed to fetch product details");
+          }
 
-      return response.data as ProductDetailResponse;
-    },
+          return response.data as ProductDetailResponse;
+        }
+      : skipToken,
   });

@@ -141,6 +141,8 @@ export default function DesignsScreen() {
   const [selectedDesign, setSelectedDesign] = useState<{
     id: string;
     name: string;
+    productId: string;
+    colorId: string;
   } | null>(null);
   const { data, isLoading, refetch } = useGetDesign();
   const deleteDesignMutation = useDeleteDesign();
@@ -174,8 +176,18 @@ export default function DesignsScreen() {
     setRefreshing(false);
   };
 
-  const handleOrder = (designId: string, designName: string) => {
-    setSelectedDesign({ id: designId, name: designName });
+  const handleOrder = (
+    designId: string,
+    designName: string,
+    productId: string,
+    colorId: string
+  ) => {
+    setSelectedDesign({
+      id: designId,
+      name: designName,
+      productId,
+      colorId,
+    });
     setOrderModalVisible(true);
   };
 
@@ -280,7 +292,9 @@ export default function DesignsScreen() {
               <DesignItem
                 key={design.id}
                 {...design}
-                onOrder={handleOrder}
+                onOrder={(id, name) =>
+                  handleOrder(id, name, design.productId, design.colorId)
+                }
                 onDelete={handleDelete}
                 isDeleting={deleteDesignMutation.isPending}
               />
@@ -296,6 +310,7 @@ export default function DesignsScreen() {
           onClose={() => setOrderModalVisible(false)}
           designId={selectedDesign.id}
           designName={selectedDesign.name}
+          colorId={selectedDesign.colorId}
           mode="add"
         />
       )}

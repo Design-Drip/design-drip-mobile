@@ -3,4 +3,5 @@ export enum ProductsKeys {
   GetCategoriesQuery = "products/getCategories",
   GetColorsQuery = "products/getColors",
   GetProductDetailsQuery = "products/getProductDetails",
+  GetProductSizesByColorQuery = "products/getProductSizesByColor",
 }
