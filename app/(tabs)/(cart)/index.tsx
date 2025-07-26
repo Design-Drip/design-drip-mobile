@@ -409,6 +409,7 @@ const CartScreen = () => {
             size: item.size,
             quantity: item.quantity,
           }))}
+          colorId={currentEditItem.colorId}
         />
       )}
     </Box>

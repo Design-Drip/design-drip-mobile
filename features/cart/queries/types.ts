@@ -10,6 +10,7 @@ export interface CartItem {
   designId: string;
   designName: string;
   name: string;
+  colorId: string;
   color: string;
   colorValue?: string;
   data: CartItemData[];

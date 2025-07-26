@@ -127,16 +127,18 @@ export const getProductSizesByColorQuery = (colorId?: string) => {
 };
 
 // Get product details by ID
-export const getProductDetailQuery = (productId: string) =>
+export const getProductDetailQuery = (productId?: string) =>
   queryOptions({
     queryKey: [ProductsKeys.GetProductDetailsQuery, productId],
-    queryFn: async () => {
-      const response = await customAxios.get(`/products/${productId}`);
+    queryFn: productId
+      ? async () => {
+          const response = await customAxios.get(`/products/${productId}`);
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch product details");
-      }
+          if (response.status !== 200) {
+            throw new Error("Failed to fetch product details");
+          }
 
-      return response.data as ProductDetailResponse;
-    },
+          return response.data as ProductDetailResponse;
+        }
+      : skipToken,
   });

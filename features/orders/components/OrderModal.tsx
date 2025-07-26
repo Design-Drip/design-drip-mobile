@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ButtonText } from "@/components/ui/button-text";
 import { Text } from "@/components/ui/text";
@@ -23,6 +24,7 @@ import {
   ModalFooter,
   ModalBackdrop,
 } from "@/components/ui/modal";
+import { getProductSizesByColorQuery } from "@/features/products/queries";
 
 interface OrderModalProps {
   visible: boolean;
@@ -32,6 +34,7 @@ interface OrderModalProps {
   mode?: "add" | "edit";
   itemId?: string;
   initialQuantities?: { size: string; quantity: number }[];
+  colorId?: string;
 }
 
 export function OrderModal({
@@ -42,11 +45,17 @@ export function OrderModal({
   mode = "add",
   itemId,
   initialQuantities,
+  colorId,
 }: OrderModalProps) {
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const addToCartMutation = useAddToCartMutation();
   const updateCartMutation = useUpdateCartItemMutation();
   const toast = useCustomToast();
+
+  const { data: colorSizesData, isLoading: isLoadingProduct } = useQuery({
+    ...getProductSizesByColorQuery(colorId),
+    enabled: !!colorId && visible,
+  });
 
   const isPending =
     mode === "add" ? addToCartMutation.isPending : updateCartMutation.isPending;
@@ -63,8 +72,27 @@ export function OrderModal({
     }
   }, [initialQuantities, visible]);
 
+  // Get available quantities for each size
+  const getAvailableQuantity = (size: string) => {
+    if (!colorSizesData || !colorId) return 0;
+
+    // Find the color data
+    const sizeData = colorSizesData.sizes.find((c) => c.size === size);
+
+    return sizeData?.quantity || 0;
+  };
+
   const handleQuantityChange = (size: string, value: string) => {
     const quantity = parseInt(value) || 0;
+    const availableQuantity = getAvailableQuantity(size);
+
+    if (quantity > availableQuantity) {
+      toast.toastError(
+        `Only ${availableQuantity} items available for size ${size}`
+      );
+      return;
+    }
+
     setQuantities((prev) => ({
       ...prev,
       [size]: quantity < 0 ? 0 : quantity,
@@ -79,6 +107,17 @@ export function OrderModal({
     if (quantityBySize.length === 0) {
       toast.toastError("Please select at least one size and quantity");
       return;
+    }
+
+    // Validate quantities against available stock
+    for (const { size, quantity } of quantityBySize) {
+      const available = getAvailableQuantity(size);
+      if (quantity > available) {
+        toast.toastError(
+          `Insufficient stock for size ${size}. Only ${available} available.`
+        );
+        return;
+      }
     }
 
     if (mode === "add") {
@@ -129,21 +168,67 @@ export function OrderModal({
         </ModalHeader>
 
         <ModalBody>
-          <VStack space="md" className="my-4">
-            {Object.values(SIZES).map((size) => (
-              <HStack key={size} className="items-center justify-between">
-                <Text className="font-medium w-12">{size}:</Text>
-                <Input size="sm" className="w-20 text-center">
-                  <InputField
-                    keyboardType="numeric"
-                    value={quantities[size]?.toString() || ""}
-                    onChangeText={(value) => handleQuantityChange(size, value)}
-                    textAlign="center"
-                  />
-                </Input>
-              </HStack>
-            ))}
-          </VStack>
+          {isLoadingProduct ? (
+            <VStack space="md" className="items-center py-4">
+              <Spinner size="small" />
+              <Text className="text-typography-500">
+                Loading stock information...
+              </Text>
+            </VStack>
+          ) : (
+            <VStack space="md" className="my-4">
+              {Object.values(SIZES).map((size) => {
+                const availableQuantity = getAvailableQuantity(size);
+                const isOutOfStock = availableQuantity === 0;
+                const currentQuantity = quantities[size] || 0;
+
+                return (
+                  <VStack key={size} space="xs">
+                    <HStack className="items-center justify-between">
+                      <VStack space="xs">
+                        <Text className="font-medium">{size}:</Text>
+                        <Text
+                          className={`text-xs ${
+                            isOutOfStock
+                              ? "text-error-600"
+                              : availableQuantity <= 5
+                              ? "text-warning-600"
+                              : "text-success-600"
+                          }`}
+                        >
+                          {isOutOfStock
+                            ? "Out of stock"
+                            : `${availableQuantity} available`}
+                        </Text>
+                      </VStack>
+                      <Input
+                        size="sm"
+                        className={`w-20 text-center ${
+                          isOutOfStock ? "opacity-50" : ""
+                        }`}
+                      >
+                        <InputField
+                          keyboardType="numeric"
+                          value={currentQuantity.toString()}
+                          onChangeText={(value) =>
+                            handleQuantityChange(size, value)
+                          }
+                          textAlign="center"
+                          editable={!isOutOfStock}
+                          placeholder="0"
+                        />
+                      </Input>
+                    </HStack>
+                    {currentQuantity > availableQuantity && (
+                      <Text className="text-xs text-error-600">
+                        Exceeds available quantity
+                      </Text>
+                    )}
+                  </VStack>
+                );
+              })}
+            </VStack>
+          )}
         </ModalBody>
 
         <ModalFooter>
@@ -155,7 +240,7 @@ export function OrderModal({
               onPress={handleSubmit}
               variant="solid"
               action="primary"
-              disabled={isPending}
+              disabled={isPending || isLoadingProduct}
             >
               {isPending ? (
                 <HStack space="sm" className="items-center">
