@@ -64,20 +64,14 @@ export default function OrderSummaryActionsheet({
 
           <HStack className="justify-between">
             <Text className="text-typography-600">Shipping</Text>
-            {shipping === 0 ? (
-              <Text className="text-success-600">FREE</Text>
-            ) : (
-              <Text className="font-medium">{formatPrice(shipping)}</Text>
-            )}
+            <Text className="text-success-600">FREE</Text>
           </HStack>
 
-          {shipping > 0 && subtotal > 0 && (
-            <Box className="p-3 bg-info-50 rounded-lg">
-              <Text className="text-sm text-info-700 text-center">
-                Add {formatPrice(200000 - subtotal)} more for free shipping!
-              </Text>
-            </Box>
-          )}
+          <Box className="p-3 bg-info-50 rounded-lg">
+            <Text className="text-sm text-info-700 text-center">
+              Standard shipping is always free! Choose express shipping at checkout for faster delivery.
+            </Text>
+          </Box>
 
           <Divider className="my-2" />
 

@@ -192,8 +192,8 @@ const CartScreen = () => {
     : 0;
 
   // Calculate shipping based on subtotal
-  // Assuming shipping is free for orders over 200000
-  const shipping = subtotal > 200000 ? 0 : 10000;
+  // Standard shipping is free for all orders
+  const shipping = 0;
   const total = subtotal + shipping;
 
   const allVisibleSelected =
