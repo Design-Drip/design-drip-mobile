@@ -234,18 +234,6 @@ const CartScreen = () => {
   if (!cartData?.items || cartData.items.length === 0) {
     return (
       <Box className="flex-1 bg-background-0 p-4">
-        <HStack className="items-center mb-8">
-          <Button
-            variant="outline"
-            size="sm"
-            onPress={() => router.back()}
-            className="flex-row items-center"
-          >
-            <Icon as={ArrowLeft} size="sm" className="mr-2" />
-            <ButtonText>Continue Shopping</ButtonText>
-          </Button>
-        </HStack>
-
         <Center className="flex-1 p-4">
           <VStack space="md" className="items-center">
             <Icon as={ShoppingBag} size="xl" className="text-typography-300" />
@@ -259,7 +247,7 @@ const CartScreen = () => {
               className="bg-primary-600"
               onPress={() => router.push("/(tabs)/(products)")}
             >
-              <ButtonText>Start Shopping</ButtonText>
+              <ButtonText className="text-white">Start Shopping</ButtonText>
             </Button>
           </VStack>
         </Center>

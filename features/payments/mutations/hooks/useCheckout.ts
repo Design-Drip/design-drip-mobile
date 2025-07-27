@@ -4,6 +4,7 @@ import { usePaymentMutations } from "..";
 import { PaymentsKeys } from "../../queries/keys";
 import { ProcessCheckoutRequest } from "../../types";
 import { OrdersKeys } from "@/features/orders/queries/keys";
+import { CartKeys } from "@/features/cart/queries/keys";
 
 export const useProcessCheckoutMutation = () => {
   const queryClient = useQueryClient();
@@ -22,6 +23,9 @@ export const useProcessCheckoutMutation = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [OrdersKeys.GetOrdersQuery],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [CartKeys.GetCartQuery],
       });
       toast.toastSuccess("Checkout successfully!");
     },
