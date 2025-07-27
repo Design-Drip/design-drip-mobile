@@ -140,8 +140,8 @@ const CheckoutScreen = () => {
   const handleAddressSubmit = useCallback(
     (address: CollectAddressResult) => {
       const shippingAddress: ShippingAddress = {
-        name: address.name || "",
-        phone: address.phone || "",
+        name: address.name,
+        phone: address.phone,
         address: {
           line1: address.address.line1 || "",
           city: address.address.city || "",

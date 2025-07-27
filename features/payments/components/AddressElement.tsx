@@ -90,11 +90,14 @@ const AddressElement = ({
           onError={onError}
           presentationStyle="pageSheet"
           animationStyle="slide"
+          additionalFields={{
+            phoneNumber: "required",
+          }}
           defaultValues={
             address
               ? {
                   name: address.name,
-                  phone: address.phone || "",
+                  phone: address.phone,
                   address: {
                     line1: address.address.line1,
                     city: address.address.city,
