@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useStripe } from "@stripe/stripe-react-native";
@@ -21,6 +21,9 @@ import { formatPrice } from "@/utils/price";
 import { PaymentMethodsList } from "@/features/payments/components/PaymentMethodsList";
 import { AddPaymentMethodForm } from "@/features/payments/components/AddPaymentMethodForm";
 import useGetPaymentMethods from "@/features/payments/queries/hooks/useGetPaymentMethods";
+import AddressElement from "@/features/payments/components/AddressElement";
+import { ShippingAddress } from "@/features/payments/types";
+import { CollectAddressResult } from "@stripe/stripe-react-native/lib/typescript/src/components/AddressSheet";
 
 const CheckoutScreen = () => {
   const router = useRouter();
@@ -32,6 +35,14 @@ const CheckoutScreen = () => {
     string | undefined
   >(undefined);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [shippingAddress, setShippingAddress] =
+    useState<ShippingAddress | null>(null);
+  const [addressComplete, setAddressComplete] = useState(false);
+  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingMethod, setShippingMethod] = useState<"standard" | "express">(
+    "standard"
+  );
+  const [showAddressSheet, setShowAddressSheet] = useState(false);
 
   const {
     data: checkoutInfo,
@@ -69,11 +80,17 @@ const CheckoutScreen = () => {
       return;
     }
 
+    if (!addressComplete || !shippingAddress) {
+      toast.toastError("Please provide a complete shipping address");
+      return;
+    }
+
     processCheckout(
       {
         paymentMethodId: selectedPaymentMethod,
         itemIds: itemIds?.split(","),
         return_url: "designdripmobile://orders",
+        shipping: shippingAddress,
       },
       {
         onSuccess: async (data) => {
@@ -88,14 +105,14 @@ const CheckoutScreen = () => {
                 toast.toastError(`Payment failed: ${error.message}`);
               } else if (paymentIntent.status === "Succeeded") {
                 toast.toastSuccess("Payment successful!");
-                router.navigate(
+                router.push(
                   `/(tabs)/(profile)/orders/${
                     data.orderId || data.paymentIntentId
                   }`
                 );
               } else {
                 toast.toastSuccess("Order created, payment processing");
-                router.navigate("/(tabs)/(profile)/orders");
+                router.push("/(tabs)/(profile)/orders");
               }
             } catch (e) {
               console.error("Payment confirmation error:", e);
@@ -103,12 +120,12 @@ const CheckoutScreen = () => {
             }
           } else if (data.status.toLowerCase() === "succeeded") {
             toast.toastSuccess("Payment successful!");
-            router.navigate(
+            router.push(
               `/(tabs)/(profile)/orders/${data.orderId || data.paymentIntentId}`
             );
           } else {
             toast.toastSuccess("Order created, payment processing");
-            router.navigate("/(tabs)/(profile)/orders");
+            router.push("/(tabs)/(profile)/orders");
           }
         },
         onError: (error: Error | any) => {
@@ -119,6 +136,57 @@ const CheckoutScreen = () => {
       }
     );
   };
+
+  const handleAddressSubmit = useCallback(
+    (address: CollectAddressResult) => {
+      const shippingAddress: ShippingAddress = {
+        name: address.name || "",
+        phone: address.phone || "",
+        address: {
+          line1: address.address.line1 || "",
+          city: address.address.city || "",
+          state: address.address.state || "",
+          postal_code: address.address.postalCode || "",
+          country: address.address.country || "VN",
+        },
+        method: shippingMethod,
+        cost: shippingMethod === "express" ? 30000 : 0,
+      };
+
+      setShippingAddress(shippingAddress);
+
+      const isComplete = !!(
+        shippingAddress.name &&
+        shippingAddress.address.line1 &&
+        shippingAddress.address.city &&
+        shippingAddress.address.state &&
+        shippingAddress.address.postal_code &&
+        shippingAddress.address.country
+      );
+
+      setAddressComplete(isComplete);
+      setShowAddressSheet(false);
+    },
+    [shippingMethod]
+  );
+
+  const handleShippingMethodChange = useCallback(
+    (method: "standard" | "express") => {
+      setShippingMethod(method);
+      const cost = method === "express" ? 30000 : 0;
+      setShippingCost(cost);
+
+      if (shippingAddress) {
+        const updatedAddress = {
+          ...shippingAddress,
+          method,
+          cost,
+        };
+        setShippingAddress(updatedAddress);
+      }
+    },
+    [shippingAddress]
+  );
 
   if (isLoading) {
     return (
@@ -239,6 +307,26 @@ const CheckoutScreen = () => {
           </VStack>
         </Card>
 
+        {/* Shipping Address */}
+        <Card className="p-4 mb-4">
+          <VStack space="md">
+            <Heading size="lg">Shipping Information</Heading>
+            <Divider />
+            <AddressElement
+              openAddressSheet={showAddressSheet}
+              address={shippingAddress}
+              shippingMethod={shippingMethod}
+              onSubmit={handleAddressSubmit}
+              onShippingMethodChange={handleShippingMethodChange}
+              onOpenAddressSheet={() => setShowAddressSheet(true)}
+              onError={(error) => {
+                console.error("Address error:", error);
+                setShowAddressSheet(false);
+              }}
+            />
+          </VStack>
+        </Card>
+
         {/* Order Total */}
         <Card className="p-4">
           <VStack space="md">
@@ -251,15 +339,24 @@ const CheckoutScreen = () => {
             </HStack>
 
             <HStack className="justify-between">
+              <Text className="text-typography-600">Shipping</Text>
+              <Text>
+                {shippingCost > 0 ? formatPrice(shippingCost) : "Free"}
+              </Text>
+            </HStack>
+
+            <Divider className="my-2" />
+
+            <HStack className="justify-between">
               <Text className="font-bold text-lg">Total</Text>
               <Text className="font-bold text-lg">
-                {formatPrice(checkoutInfo.totalAmount)}
+                {formatPrice(checkoutInfo.totalAmount + shippingCost)}
               </Text>
             </HStack>
 
             <Button
               onPress={handleCheckout}
-              disabled={isPending || !selectedPaymentMethod}
+              disabled={isPending || !selectedPaymentMethod || !addressComplete}
               className="w-full mt-4"
             >
               {isPending ? (
@@ -269,7 +366,7 @@ const CheckoutScreen = () => {
                 </HStack>
               ) : (
                 <ButtonText className="text-white">
-                  Pay {formatPrice(checkoutInfo.totalAmount)}
+                  Pay {formatPrice(checkoutInfo.totalAmount + shippingCost)}
                 </ButtonText>
               )}
             </Button>
