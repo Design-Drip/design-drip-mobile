@@ -105,14 +105,14 @@ const CheckoutScreen = () => {
                 toast.toastError(`Payment failed: ${error.message}`);
               } else if (paymentIntent.status === "Succeeded") {
                 toast.toastSuccess("Payment successful!");
-                router.navigate(
+                router.push(
                   `/(tabs)/(profile)/orders/${
                     data.orderId || data.paymentIntentId
                   }`
                 );
               } else {
                 toast.toastSuccess("Order created, payment processing");
-                router.navigate("/(tabs)/(profile)/orders");
+                router.push("/(tabs)/(profile)/orders");
               }
             } catch (e) {
               console.error("Payment confirmation error:", e);
@@ -120,12 +120,12 @@ const CheckoutScreen = () => {
             }
           } else if (data.status.toLowerCase() === "succeeded") {
             toast.toastSuccess("Payment successful!");
-            router.navigate(
+            router.push(
               `/(tabs)/(profile)/orders/${data.orderId || data.paymentIntentId}`
             );
           } else {
             toast.toastSuccess("Order created, payment processing");
-            router.navigate("/(tabs)/(profile)/orders");
+            router.push("/(tabs)/(profile)/orders");
           }
         },
         onError: (error: Error | any) => {
