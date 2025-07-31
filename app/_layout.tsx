@@ -16,6 +16,18 @@ export {
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: "(tabs)",
+
+  // Ensure screens exist in stacks before loading them
+  "(tabs)": {
+    initialRouteName: "(home)",
+  },
+  "(tabs)/(profile)": {
+    initialRouteName: "index",
+  },
+  // Configure routes for better navigation
+  "/(tabs)/(profile)/account": "/(tabs)/(profile)/account/index",
+  "/(tabs)/(profile)/payment-methods":
+    "/(tabs)/(profile)/payment-methods/index",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -51,8 +63,10 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(modals)" options={{ presentation: "modal" }} />
     </Stack>
   );
 }

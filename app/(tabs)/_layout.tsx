@@ -1,39 +1,74 @@
 import React from "react";
+import { Redirect, Tabs } from "expo-router";
+import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@clerk/clerk-expo";
+import colors from "tailwindcss/colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
-
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import Feather from "@expo/vector-icons/Feather";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
+  color: React.ComponentProps<typeof FontAwesome>["color"];
 }) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
+  const { isLoaded, isSignedIn } = useAuth();
+
+  if (!isLoaded) {
+    return <Spinner size="large" color={colors.gray[500]} />;
+  }
+
+  if (!isSignedIn) {
+    return <Redirect href="/(auth)/sign-in" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: false,
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Home",
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="(products)"
         options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="archive" color={color} />
+          title: "Products",
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="package" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="(wishlist)"
+        options={{
+          title: "Wishlist",
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="heart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="(cart)"
+        options={{
+          title: " Cart",
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="shopping-cart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="(profile)"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
     </Tabs>
