@@ -11,6 +11,7 @@ export const Providers = ({ children }: ProvidersProps) => {
   return (
     <StripeProvider
       publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+      urlScheme="designdripmobile"
     >
       <ClerkProvider tokenCache={tokenCache}>
         <GluestackUIProvider mode="system">

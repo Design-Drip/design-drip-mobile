@@ -16,12 +16,18 @@ interface PaymentMethodCardProps {
   paymentMethod: PaymentMethod;
   onDelete?: (id: string) => void;
   onSetDefault?: (id: string) => void;
+  selectMode?: boolean;
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
 export const PaymentMethodCard = ({
   paymentMethod,
   onDelete,
   onSetDefault,
+  selectMode = false,
+  isSelected = false,
+  onSelect,
 }: PaymentMethodCardProps) => {
   const { brand, last4, expMonth, expYear, isDefault, id } = paymentMethod;
 
@@ -33,10 +39,14 @@ export const PaymentMethodCard = ({
   // Map card brand to display text
   const displayBrand = brand.charAt(0).toUpperCase() + brand.slice(1);
 
-  return (
+  const cardContent = (
     <Box
       className={`p-4 border rounded-lg ${
-        isDefault ? "border-primary-500" : "border-gray-200"
+        isDefault
+          ? "border-primary-500"
+          : isSelected
+          ? "border-primary-600 bg-primary-50"
+          : "border-gray-200"
       } mb-2`}
     >
       <HStack className="justify-between items-center">
@@ -64,18 +74,31 @@ export const PaymentMethodCard = ({
         </HStack>
 
         <HStack className="space-x-2">
-          {!isDefault && onSetDefault && (
+          {!isDefault && onSetDefault && !selectMode && (
             <Pressable className="p-2" onPress={() => onSetDefault(id)}>
               <Text className="text-primary-500">Set default</Text>
             </Pressable>
           )}
-          {onDelete && (
+          {onDelete && !selectMode && (
             <Pressable className="p-2" onPress={() => onDelete(id)}>
               <Icon as={TrashIcon} className="text-error-500" />
             </Pressable>
+          )}
+          {selectMode && isSelected && (
+            <Icon
+              as={CheckCircle2Icon}
+              size="md"
+              className="text-primary-500"
+            />
           )}
         </HStack>
       </HStack>
     </Box>
   );
+
+  if (selectMode && onSelect) {
+    return <Pressable onPress={onSelect}>{cardContent}</Pressable>;
+  }
+
+  return cardContent;
 };

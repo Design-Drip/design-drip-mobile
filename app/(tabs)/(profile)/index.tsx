@@ -7,24 +7,40 @@ import { ScrollView, Image, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 import { Icon } from "@/components/ui/icon";
-import { ArrowRightIcon, CreditCardIcon, UserIcon } from "lucide-react-native";
+import {
+  ArrowRightIcon,
+  CreditCardIcon,
+  UserIcon,
+  Shirt,
+  ClipboardList,
+} from "lucide-react-native";
 import { PROFILE_ROUTES } from "@/constants/routes";
+
+const menuItems = [
+  {
+    title: "Payment Methods",
+    icon: CreditCardIcon,
+    route: PROFILE_ROUTES.PAYMENT_METHODS,
+  },
+  {
+    title: "Update Profile",
+    icon: UserIcon,
+    route: PROFILE_ROUTES.ACCOUNT,
+  },
+  {
+    title: "Saved Design",
+    icon: Shirt,
+    route: PROFILE_ROUTES.DESIGNS,
+  },
+  {
+    title: "Orders",
+    icon: ClipboardList,
+    route: PROFILE_ROUTES.ORDERS,
+  },
+];
 
 export default function ProfileScreen() {
   const { user } = useUser();
-
-  const menuItems = [
-    {
-      title: "Payment Methods",
-      icon: CreditCardIcon,
-      route: PROFILE_ROUTES.PAYMENT_METHODS,
-    },
-    {
-      title: "Update Profile",
-      icon: UserIcon,
-      route: PROFILE_ROUTES.ACCOUNT,
-    },
-  ];
 
   return (
     <ScrollView className="flex-1 bg-white">
