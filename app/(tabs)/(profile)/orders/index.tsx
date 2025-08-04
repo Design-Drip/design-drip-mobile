@@ -45,6 +45,7 @@ const OrdersScreen = () => {
           { label: "All", value: undefined },
           { label: "Delivered", value: OrderStatus.DELIVERED },
           { label: "Shipped", value: OrderStatus.SHIPPED },
+          { label: "Shipping", value: OrderStatus.SHIPPING },
           { label: "Processing", value: OrderStatus.PROCESSING },
           { label: "Pending", value: OrderStatus.PENDING },
           { label: "Canceled", value: OrderStatus.CANCELED },

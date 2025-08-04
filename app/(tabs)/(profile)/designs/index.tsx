@@ -158,10 +158,10 @@ export default function DesignsScreen() {
           url: url as string,
         }))
       : [];
-    const productId = item.shirt_color_id?.shirt_id?.id || "Unknown Color";
-    const colorId = item.shirt_color_id?.id || "Unknown Product";
+    const productId = item.shirt_color_id?.shirt_id?._id || "Unknown Color";
+    const colorId = item.shirt_color_id?._id || "Unknown Product";
     return {
-      id: item.id,
+      id: item._id,
       colorId: colorId,
       productId: productId,
       previewImages: [previewImages],
