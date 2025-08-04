@@ -12,7 +12,10 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Spinner } from "@/components/ui/spinner";
 import { Center } from "@/components/ui/center";
-import { getProductDetailQuery } from "@/features/products/queries";
+import {
+  getProductDetailQuery,
+  getProductSizesByColorQuery,
+} from "@/features/products/queries";
 import { formatPrice } from "@/utils/price";
 import ImageCarousel, { ImageItem } from "@/components/ImageCarousel";
 import ColorPanel from "@/features/products/components/ColorPanel";
@@ -33,6 +36,10 @@ export default function ProductDetailsScreen() {
     isLoading,
     error,
   } = useQuery(getProductDetailQuery(id));
+
+  const { data: colorSizesData, isLoading: isSizesLoading } = useQuery(
+    getProductSizesByColorQuery(selectedColor?.id)
+  );
 
   if (isLoading) {
     return (
@@ -65,16 +72,27 @@ export default function ProductDetailsScreen() {
     image: color.images.find((img) => img.view_side === "front") || null,
   }));
 
-  // Get unique sizes
-  const uniqueSizes = Array.from(new Set(sizes.map((size) => size.size))).sort(
-    (a, b) => {
+  // Get sizes from colorSizesData if available, otherwise fallback to original sizes
+  const availableSizes = colorSizesData?.sizes || sizes;
+
+  // Get unique sizes with quantity information
+  const uniqueSizes = Array.from(
+    new Set(availableSizes.map((size) => size.size))
+  )
+    .map((sizeValue) => {
+      const sizeData = availableSizes.find((s) => s.size === sizeValue);
+      return {
+        size: sizeValue,
+        quantity: sizeData?.quantity || 0,
+      };
+    })
+    .sort((a, b) => {
       const sizeOrder = { S: 1, M: 2, L: 3, XL: 4, XXL: 5 };
       return (
-        (sizeOrder[a as keyof typeof sizeOrder] || 99) -
-        (sizeOrder[b as keyof typeof sizeOrder] || 99)
+        (sizeOrder[a.size as keyof typeof sizeOrder] || 99) -
+        (sizeOrder[b.size as keyof typeof sizeOrder] || 99)
       );
-    }
-  );
+    });
 
   // Get current color images
   const currentImages = selectedColor?.images || [];
@@ -83,6 +101,7 @@ export default function ProductDetailsScreen() {
     const fullColor = colors.find((c) => c.id === color.id);
     if (fullColor) {
       setSelectedColor(fullColor);
+      setSelectedSize(null);
     }
   };
 
@@ -137,30 +156,63 @@ export default function ProductDetailsScreen() {
           {uniqueSizes.length > 0 && (
             <Box>
               <Text className="font-bold mb-2">Sizes</Text>
-              <HStack space="sm" className="flex-wrap">
-                {uniqueSizes.map((size) => (
-                  <Button
-                    key={size}
-                    variant={selectedSize === size ? "solid" : "outline"}
-                    className={`mb-2 min-w-[60px] ${
-                      selectedSize === size
-                        ? "bg-primary-600"
-                        : "border-outline-300"
-                    }`}
-                    onPress={() => setSelectedSize(size)}
-                  >
-                    <ButtonText
-                      className={
-                        selectedSize === size
-                          ? "text-white"
-                          : "text-typography-600"
-                      }
-                    >
-                      {size}
-                    </ButtonText>
-                  </Button>
-                ))}
-              </HStack>
+              {isSizesLoading ? (
+                <Center className="py-4">
+                  <Spinner size="small" />
+                </Center>
+              ) : (
+                <HStack space="sm" className="flex-wrap">
+                  {uniqueSizes.map((sizeInfo) => {
+                    const isOutOfStock = sizeInfo.quantity === 0;
+                    const isSelected = selectedSize === sizeInfo.size;
+
+                    return (
+                      <Button
+                        key={sizeInfo.size}
+                        variant={isSelected ? "solid" : "outline"}
+                        className={`mb-2 min-w-[60px] ${
+                          isOutOfStock
+                            ? "opacity-50"
+                            : isSelected
+                            ? "bg-primary-600"
+                            : "border-outline-300"
+                        }`}
+                        onPress={() =>
+                          !isOutOfStock && setSelectedSize(sizeInfo.size)
+                        }
+                        disabled={isOutOfStock}
+                      >
+                        <VStack className="items-center">
+                          <ButtonText
+                            className={
+                              isOutOfStock
+                                ? "text-gray-400"
+                                : isSelected
+                                ? "text-white"
+                                : "text-typography-600"
+                            }
+                          >
+                            {sizeInfo.size}
+                          </ButtonText>
+                          <Text
+                            className={`text-xs ${
+                              isOutOfStock
+                                ? "text-red-500"
+                                : isSelected
+                                ? "text-white"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {isOutOfStock
+                              ? "Out of Stock"
+                              : `${sizeInfo.quantity} left`}
+                          </Text>
+                        </VStack>
+                      </Button>
+                    );
+                  })}
+                </HStack>
+              )}
             </Box>
           )}
 
@@ -174,14 +226,6 @@ export default function ProductDetailsScreen() {
               enableExperimentalGhostLinesPrevention
             />
           </Box>
-
-          <Button
-            className="flex-1 mt-4"
-            size="lg"
-            isDisabled={!selectedSize || !selectedColor}
-          >
-            <ButtonText>Add to Cart</ButtonText>
-          </Button>
         </VStack>
       </Box>
     </ScrollView>

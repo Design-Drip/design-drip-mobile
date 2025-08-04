@@ -27,7 +27,7 @@ const OrdersScreen = () => {
   );
 
   const handleOrderPress = (orderId: string) => {
-    router.push(`/orders/${orderId}`);
+    router.push(`/(tabs)/(profile)/orders/${orderId}`);
   };
 
   const handleStatusFilter = (status?: string) => {

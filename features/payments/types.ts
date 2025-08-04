@@ -32,12 +32,28 @@ export interface CheckoutInfoResponse {
   defaultPaymentMethod: PaymentMethod | null;
 }
 
+export interface ShippingAddress {
+  name: string;
+  phone?: string;
+  address: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+  };
+  method?: "standard" | "express";
+  cost?: number;
+}
+
 export interface ProcessCheckoutRequest {
   paymentMethodId?: string;
   savePaymentMethod?: boolean;
   paymentIntent?: string;
   itemIds?: string[];
   return_url?: string;
+  shipping?: ShippingAddress;
 }
 
 export interface ProcessCheckoutResponse {
