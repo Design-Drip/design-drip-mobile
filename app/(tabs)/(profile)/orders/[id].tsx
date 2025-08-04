@@ -19,6 +19,7 @@ import { OrderStatus } from "@/constants/orders";
 const OrderStatusColor = {
   delivered: "text-success-600",
   shipped: "text-info-600",
+  shipping: "text-info-600",
   processing: "text-warning-600",
   pending: "text-gray-600",
   canceled: "text-error-600",
@@ -99,6 +100,8 @@ const OrderDetailsScreen = () => {
                   ? "Delivered"
                   : order.status === OrderStatus.SHIPPED
                   ? "Out for delivery"
+                  : order.status === OrderStatus.SHIPPING
+                  ? "Shipping soon"
                   : order.status === OrderStatus.PROCESSING
                   ? "Preparing to ship"
                   : order.status === OrderStatus.CANCELED
@@ -123,7 +126,7 @@ const OrderDetailsScreen = () => {
                   <VStack className="flex-1 mr-2">
                     <Text className="font-semibold">{item.name}</Text>
                     <Text className="text-gray-600">
-                      Design: {item.designId}
+                      Design: {item.designId._id}
                     </Text>
                     <Text className="text-gray-600">Color: {item.color}</Text>
                   </VStack>

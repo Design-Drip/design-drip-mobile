@@ -2,7 +2,7 @@ import { queryOptions, skipToken, useQuery } from "@tanstack/react-query";
 import { OrdersKeys } from "./keys";
 import usePrivateAxios from "@/hooks/usePrivateAxios";
 import { OrderListResponse } from "../types";
-import { Order } from "@/types/order";
+import { OrderDetail } from "@/types/order";
 
 export const useGetOrdersQuery = (page = 1, limit = 10, status?: string) => {
   const axiosPrivate = usePrivateAxios();
@@ -46,7 +46,7 @@ export const getOrderDetailQuery = (orderId?: string) => {
               throw new Error("Failed to fetch order details");
             }
 
-            return response.data as Order;
+            return response.data as OrderDetail;
           }
         : skipToken,
       enabled: !!orderId,
